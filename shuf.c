@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <limits.h>
+#include "epath.h"
 
 #define PROGRAM_NAME "SHUF 1.0"
 #define AUTHORS "BLUE TEAM"
@@ -63,6 +64,7 @@ int main(int argc, char **argv)
     
     char *loHi = NULL; // Array of our low high value
     char *count = NULL; // Count of how many lines we will want to print
+    char *eArgs = NULL; // Arguments provided for e option
     char const *outfile = NULL; // Outfile if provided
     
     int index;
@@ -77,6 +79,7 @@ int main(int argc, char **argv)
 
         case 'e':
             eflag = 1;
+            eArgs = optarg;
             break;
 
 
@@ -139,8 +142,9 @@ int main(int argc, char **argv)
             return EXIT_FAILURE; // eflag and iflag cant be used together
         }
 
-
         /*code*/
+
+        char ** allLines = makeLines(eArgs); 
 
     }
     // HANDLE THE CASE OF I FLAG
