@@ -27,4 +27,5 @@ char ** makeLines(char * input) {
         strlcpy(allWords[numWords-1], word, strlen(word));
         word = strtok(NULL, " ");
     }
+    return allWords;
 } 
