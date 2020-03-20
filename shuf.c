@@ -102,9 +102,10 @@ int main(int argc, char **argv)
             break;
         
         case 'o':
-            if(outfile != NULL)
+            if(outfile != NULL) {
                 printf("Error Multiple Output Files Specified.");
                 return EXIT_FAILURE;
+            }
             outfile = optarg;
             break;
 
