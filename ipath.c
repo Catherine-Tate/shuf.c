@@ -2,13 +2,87 @@
 #include <zconf.h>
 #include <bsd/stdlib.h>
 
+/**
+ * Generate and return an integer array which is a random permutation of the values from low to high.
+ * The return array is dynamically allocated and should be free'd by the caller.
+ *
+ * @param low Lower bound
+ * @param high Upper bound
+ * @param length Will be set by reference by this function, can be used by the caller to determine the length
+ *               of the returned array
+ *
+ * @return Returns an integer array which is a random permutation of the values from low to high.
+ *         On error will return a NULL pointer and length will be set to -1.
+ */
+int * getIPathArray(int low, int high, int * length)
+{
+    *length = -1;                   // Will contain length of the permutation array once that value is calculated
+    int * values = NULL;            // Pointer to integer array which will hold random permutation of low to high
+
+    // Validate
+    if(low < 0 || high < 0 || low > high)
+    {
+        printf("ERROR: Both low and high must be 0 or greater and low may not be greater than high.");
+        return NULL;
+    }
+
+    // Ensure dont have 0 AND INT_MAX
+    if(low == 0 && high == INT_MAX)
+    {
+        printf("ERROR: Low as 0 and High as INT_MAX exceeds maximum length.\n");
+        return NULL;
+    }
+
+    // Collect length
+    *length = high - low + 1;
+
+    // Allocate memory for the randomly permuted array
+    values = calloc(*length, sizeof(int));
+
+    // Verify calloc call
+    if(values == NULL)
+    {
+        printf("ERROR: There was an error allocating memory for i path array.\n");
+        return NULL;
+    }
+
+    // Init all values in values array to a sentinel of -1
+    for(int i = 0; i < *length; i++)
+    {
+        values[i] = -1;
+    }
+
+    // For each number from low to high
+    for(int i = low; i <= high; i++)
+    {
+        int randomIndex = -1;
+        int openIndexFound = 0;
+
+        do
+        {
+            // Get a random index
+            randomIndex = arc4random_uniform(*length);
+
+            // If the index is unused, then insert this low-high value at the open index
+            if(values[randomIndex] == -1)
+            {
+                values[randomIndex] = i;
+                openIndexFound = 1;
+            }
+
+            // If the random index was already occupied then keep trying until we find an open one
+        } while (!openIndexFound);
+    }
+
+    return values;
+}
+
 int main(int argc, char **argv)
 {
-    int i = 0;                      // Loop variable
     int low = 0;                    // Low end of range
     int high = 0;                   // High end of range
-    int range = 0;                  // Total length of range
-    int * values = NULL;            // Pointer to integer array which will hold random permutation of low to high
+    int length = 0;                 // The length of the random permutation array
+    int * values = NULL;            // Random permutation array
 
     // Verify number of command line arguments
     if (argc != 4)
@@ -20,61 +94,17 @@ int main(int argc, char **argv)
     low = (int)strtol(argv[2], NULL, 10);
     high = (int)strtol(argv[3], NULL, 10);
 
-    // Validate
-    if(low < 0 || high < 0 || low > high)
+    // Get the permuted array
+    values = getIPathArray(low, high, &length);
+
+    // Check for errors
+    if(values == NULL)
     {
-        printf("ERROR: Both low and high must be 0 or greater and low may not be greater than high.");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
-    // Ensure dont have 0 AND INT_MAX
-    if(low == 0 && high == INT_MAX)
-    {
-        printf("ERROR: Low as 0 and High as INT_MAX exceeds maximum range.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("INT_MAX is %d\n", INT_MAX);
-
-    // Collect range
-    range = high - low + 1;
-
-    printf("Low was %d\n", low);
-    printf("High was %d\n", high);
-    printf("Range is %d\n", range);
-
-    // Allocate memory for the randomly permuted array
-    values = calloc(range, sizeof(int));
-
-    // Init all values in values array to a sentinel of -1
-    for(i = 0; i < range; i++)
-    {
-        values[i] = -1;
-    }
-
-    // For each number from low to high
-    for(i = low; i <= high; i++)
-    {
-        int index = -1;
-        int openIndexFound = 0;
-
-        do
-        {
-            // Get a random index
-            index = arc4random_uniform(range);
-
-            // If the index is unused, then insert this low-high value at the open index
-            if(values[index] == -1)
-            {
-                values[index] = i;
-                openIndexFound = 1;
-            }
-
-            // If the random index was already occupied then keep trying until we find an open one
-        } while (!openIndexFound);
-    }
-
-    for(i = 0; i < range; i++)
+    // Test Print
+    for(int i = 0; i < length; i++)
     {
         printf("%d\n", values[i]);
     }
