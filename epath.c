@@ -6,7 +6,7 @@
 
 
 //expects char * of space seperated values taken from the arguments
-char ** makeLines(char * input) {
+char ** makeLines(char * input, int * count) {
     char ** allWords = NULL;
     //char * inputBak = input;
     int numWords = 0;
@@ -27,5 +27,6 @@ char ** makeLines(char * input) {
         strlcpy(allWords[numWords-1], word, strlen(word));
         word = strtok(NULL, " ");
     }
+    *count = numWords; 
     return allWords;
 } 
