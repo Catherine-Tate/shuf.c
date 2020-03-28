@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <limits.h>
-#include "epath.h"
+#include <bsd/string.h>
 
 #define PROGRAM_NAME "SHUF 1.0"
 #define AUTHORS "BLUE TEAM"
@@ -48,10 +48,9 @@ int readInput(int argc, char**argv, char *** lines)
 }
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
-    char ** arguments = NULL;
+    //char ** arguments = NULL;
 
 
 
@@ -64,22 +63,37 @@ int main(int argc, char **argv)
     
     char *loHi = NULL; // Array of our low high value
     char *count = NULL; // Count of how many lines we will want to print
-    char *eArgs = NULL; // Arguments provided for e option
+    char **eArgs = NULL; // Arguments provided for e option
     char const *outfile = NULL; // Outfile if provided
+    int numWords = 0;
     
     int index;
     int c;
 
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "hvinorz:")) != -1)
+    while ((c = getopt(argc, argv, "hvi:n:orze:")) != -1)
         switch (c)
         {
         
-
         case 'e':
             eflag = 1;
-            eArgs = optarg;
+            index = optind-1;
+            //printf("%s\n", optarg)
+            eArgs = malloc(sizeof(char *));
+            while(index < argc) {
+                //printf("%s\n", argv[index]);
+                if(argv[index][0] != '-') {
+                    eArgs[numWords] = malloc((strlen(argv[index])+1) * sizeof(char));
+                    strlcpy(eArgs[numWords], argv[index], strlen(argv[index])+1);
+                    numWords++;
+                    eArgs = realloc(eArgs, sizeof(char *) * (numWords+1));
+                }
+                else break;
+                index++;
+            }
+            //malloc((sizeof(optarg)*sizeof(char*))+1);
+            optind = index-1;
             break;
 
 
@@ -144,9 +158,6 @@ int main(int argc, char **argv)
         }
 
         /*code*/
-
-        char ** allLines = makeLines(eArgs); 
-
     }
     // HANDLE THE CASE OF I FLAG
     else if (iflag)
@@ -163,8 +174,8 @@ int main(int argc, char **argv)
 
     
 
-    printf("lohi = %s\n",loHi);
-    printf("count = %s\n",count);
+    //printf("lohi = %s\n",loHi);
+    //printf("count = %s\n",count);
 
 
     for (index = optind; index < argc; index++)
