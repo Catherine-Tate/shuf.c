@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <limits.h>
 #include <bsd/string.h>
+#include <bsd/stdlib.h>
 
 #define PROGRAM_NAME "SHUF 1.0"
 #define AUTHORS "BLUE TEAM"
@@ -16,8 +17,25 @@
 #define VERSION "Debian"
 
 
+//takes input arguments (either from file, -e, or -i) and prints randomly based on options
+void printRandomLine(char ** inputLines, int numLines,  int z, int r, long count) {
+   
+    int removed = 0;
+    int random = -1;
+    while(count != 0) {
+        random = arc4random_uniform(numLines);
+        if(strcmp(inputLines[random], "") == 0) continue;
+        printf("%s", inputLines[random]);
+        if(!z) printf("\n");
+        if(!r) {
+            inputLines[random] = "";
+            removed++;
+        }
+        if(removed == numLines) break;
+        count--;
+    }
 
-
+}
 
 
 
@@ -62,7 +80,7 @@ int main(int argc, char **argv) {
     int zflag = 0; // Delineate lines with NUL character instead of the newline character
     
     char *loHi = NULL; // Array of our low high value
-    char *count = NULL; // Count of how many lines we will want to print
+    long count = -1; // Count of how many lines we will want to print
     char **eArgs = NULL; // Arguments provided for e option
     char const *outfile = NULL; // Outfile if provided
     int numWords = 0;
@@ -104,7 +122,13 @@ int main(int argc, char **argv) {
 
 
         case 'n':
-            count = optarg;
+            errno = 0;
+            char * errCatch;
+            count = strtol(optarg, &errCatch, 10);
+            if(strcmp(errCatch, optarg) == 0) {
+                fprintf(stderr, "Invalid Line Count: \'%s\'\n", errCatch);
+            }
+            //printf("%lu\n%s\n", count, errCatch);
             break;
         
         case 'z':
@@ -158,6 +182,7 @@ int main(int argc, char **argv) {
         }
 
         /*code*/
+        printRandomLine(eArgs, numWords, zflag, rflag, count);
     }
     // HANDLE THE CASE OF I FLAG
     else if (iflag)
