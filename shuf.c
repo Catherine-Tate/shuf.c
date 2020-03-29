@@ -38,7 +38,7 @@ void printRandomLine(char **inputLines, int numLines, int z, int r,
   }
 }
 
-int readInput(int argc, char **argv, char ***line_ptr) {
+int readInput(int argc, char **argv, char ***lines) {
   FILE *fp;
   char *line_buf = NULL;
   size_t line_buf_size = 0;
@@ -46,8 +46,7 @@ int readInput(int argc, char **argv, char ***line_ptr) {
   ssize_t line_size;
   int lines_allocated = 1;
 
-  char **lines = *line_ptr;
-  lines = calloc(1, lines_allocated * sizeof(char *));
+  *lines = calloc(1, lines_allocated * sizeof(char *));
 
   if (argc == 0 || (argv[0][0] == '-' && argv[0][1] == '\0')) {
     fp = stdin;
@@ -59,12 +58,12 @@ int readInput(int argc, char **argv, char ***line_ptr) {
     // dynamically resize buffer to avoid overflows
     if (line_count >= lines_allocated) {
       lines_allocated *= 2;
-      lines = realloc(lines, (size_t)lines_allocated * sizeof(char *));
+      *lines = realloc(*lines, (size_t)lines_allocated * sizeof(char *));
     }
-    if (lines == NULL) {
+    if (*lines == NULL) {
       perror("Error allocating lines!\n");
     }
-    lines[line_count] = line_buf;
+    (*lines)[line_count] = line_buf;
     line_count++;
     line_buf = NULL;
     line_buf_size = 0;
