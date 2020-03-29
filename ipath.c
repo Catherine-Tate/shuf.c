@@ -76,34 +76,3 @@ int *getIPathArray(int low, int high, int *length) {
 
   return values;
 }
-
-int main(int argc, char **argv) {
-  int low = 0;         // Low end of range
-  int high = 0;        // High end of range
-  int length = 0;      // The length of the random permutation array
-  int *values = NULL;  // Random permutation array
-
-  // Verify number of command line arguments
-  if (argc != 4) {
-    return EXIT_FAILURE;
-  }
-
-  // Collect low and high as integers
-  low = (int)strtol(argv[2], NULL, 10);
-  high = (int)strtol(argv[3], NULL, 10);
-
-  // Get the permuted array
-  values = getIPathArray(low, high, &length);
-
-  // Check for errors
-  if (values == NULL) {
-    return EXIT_FAILURE;
-  }
-
-  // Test Print
-  for (int i = 0; i < length; i++) {
-    printf("%d\n", values[i]);
-  }
-
-  return 0;
-}

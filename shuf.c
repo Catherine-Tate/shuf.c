@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "ipath.h"
+
 #define PROGRAM_NAME "SHUF 1.0"
 #define AUTHORS "BLUE TEAM"
 #define DATE "July 13, 2017"
@@ -176,7 +178,28 @@ int main(int argc, char **argv) {
   }
   // HANDLE THE CASE OF I FLAG
   else if (iflag) {
-    /*code*/
+    int low = 0;         // Low end of range
+    int high = 0;        // High end of range
+    int length = 0;      // The length of the random permutation array
+    int *values = NULL;  // Random permutation array
+
+    // Collect low and high as integers
+    low = (int)strtol(argv[2], NULL, 10);
+    high = (int)strtol(argv[3], NULL, 10);
+
+    // Get the permuted array
+    values = getIPathArray(low, high, &length);
+
+    // Check for errors
+    if (values == NULL) {
+      return EXIT_FAILURE;
+    }
+
+    // Test Print
+    for (int i = 0; i < length; i++) {
+      printf("%d\n", values[i]);
+    }
+
   }
   // HANDLE THE CASE OF NO FLAG
   else {
