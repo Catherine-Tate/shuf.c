@@ -196,6 +196,7 @@ int main(int argc, char **argv) {
   else {
     char **lines = NULL;
     int numLines = readInput(argc, argv, &lines);
+    printRandomLine(lines, numLines, zflag, rflag, numLines);
   }
 
   // printf("lohi = %s\n",loHi);
