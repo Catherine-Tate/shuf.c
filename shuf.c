@@ -43,6 +43,8 @@ int readInput(int argc, char **argv, char ***lines) {
   int line_count = 0;
   ssize_t line_size;
 
+  lines = calloc(1, sizeof(char *));
+
   if (argc == 0 || (argv[0][0] == '-' && argv[0][1] == '\0')) {
     fp = stdin;
 
@@ -50,6 +52,7 @@ int readInput(int argc, char **argv, char ***lines) {
     fp = fopen(argv[0], "r");
   }
   while ((line_size = getline(&line_buf, &line_buf_size, fp)) != -1) {
+    lines = realloc(lines, line_count * sizeof(char *));
     *lines[line_count] = line_buf;
     line_count++;
     line_buf = NULL;
@@ -179,7 +182,7 @@ int main(int argc, char **argv) {
   else {
     char **lines = NULL;
     int numLines = readInput(argc, argv, &lines);
-    char **shuffled_lines = shuffle(lines, numLines);
+    printRandomLine(lines, numLines, zflag, rflag, numLines);
   }
 
   // printf("lohi = %s\n",loHi);
