@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
   char *loHi = NULL;           // Array of our low high value
   long count = -1;             // Count of how many lines we will want to print
   char **eArgs = NULL;         // Arguments provided for e option
-  char const *outfile = NULL;  // Outfile if provided
+  FILE *outfile = NULL;  // Outfile if provided
   int numWords = 0;
 
   int index;
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 
   opterr = 0;
 
-  while ((c = getopt(argc, argv, "hvi:n:orze:")) != -1) switch (c) {
+  while ((c = getopt(argc, argv, "hvi:n:o:rze:")) != -1) switch (c) {
       case 'e':
         eflag = 1;
         index = optind - 1;
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
           printf("Error Multiple Output Files Specified.");
           return EXIT_FAILURE;
         }
-        outfile = optarg;
+        outfile = fopen(optarg, "w");
         break;
 
       case 'v':
