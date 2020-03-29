@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "ipath.h"
+
 #define PROGRAM_NAME "SHUF 1.0"
 #define AUTHORS "BLUE TEAM"
 #define DATE "July 13, 2017"
@@ -173,13 +175,27 @@ int main(int argc, char **argv) {
   }
   // HANDLE THE CASE OF I FLAG
   else if (iflag) {
-    /*code*/
+    int low = (int)strtol(argv[2], NULL, 10);
+    int high = (int)strtol(argv[3], NULL, 10);
+    int length = 0;
+
+    // Get the permuted array
+    char **values = getIPathArray(low, high, &length);
+
+    // Check for errors
+    if (values == NULL) {
+      return EXIT_FAILURE;
+    }
+
+    // Test Print
+    for (int i = 0; i < length; i++) {
+      printf("%s\n", values[i]);
+    }
   }
   // HANDLE THE CASE OF NO FLAG
   else {
     char **lines = NULL;
     int numLines = readInput(argc, argv, &lines);
-    char **shuffled_lines = shuffle(lines, numLines);
   }
 
   // printf("lohi = %s\n",loHi);
