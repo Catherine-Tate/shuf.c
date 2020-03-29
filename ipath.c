@@ -1,6 +1,9 @@
 #include <bsd/stdlib.h>
+#include <math.h>
 #include <stdio.h>
 #include <zconf.h>
+
+#include "util.h"
 
 /**
  * Generate and return an integer array which is a random permutation of the
@@ -19,8 +22,8 @@
 int *getIPathArray(int low, int high, int *length) {
   *length = -1;  // Will contain length of the permutation array once that value
                  // is calculated
-  int *values = NULL;  // Pointer to integer array which will hold random
-                       // permutation of low to high
+  char **values = NULL;  // Pointer to integer array which will hold random
+                         // permutation of low to high
 
   // Validate
   if (low < 0 || high < 0 || low > high) {
@@ -40,7 +43,7 @@ int *getIPathArray(int low, int high, int *length) {
   *length = high - low + 1;
 
   // Allocate memory for the randomly permuted array
-  values = calloc(*length, sizeof(int));
+  values = (char **)calloc(*length, sizeof(char *));
 
   // Verify calloc call
   if (values == NULL) {
@@ -48,32 +51,20 @@ int *getIPathArray(int low, int high, int *length) {
     return NULL;
   }
 
-  // Init all values in values array to a sentinel of -1
+  // the number of digits in INT_MAX (and therefore all valid numbers)
+  int max_digits = (int)ceil(log10((double)INT_MAX));
+
+  // initialize array with numbers in range
+  int written = 0;
   for (int i = 0; i < *length; i++) {
-    values[i] = -1;
+    values[i] = (char *)calloc(max_digits, sizeof(char));
+    written = snprintf(values[i], max_digits, "%d", low + i);
+    if (written <= 0) {
+      perror("ERROR: Unable to initialize numbern.\n");
+    }
   }
 
-  // For each number from low to high
-  for (int i = low; i <= high; i++) {
-    int randomIndex = -1;
-    int openIndexFound = 0;
-
-    do {
-      // Get a random index
-      randomIndex = arc4random_uniform(*length);
-
-      // If the index is unused, then insert this low-high value at the open
-      // index
-      if (values[randomIndex] == -1) {
-        values[randomIndex] = i;
-        openIndexFound = 1;
-      }
-
-      // If the random index was already occupied then keep trying until we find
-      // an open one
-    } while (!openIndexFound);
-  }
-
+  shuffle(values, *length);
   return values;
 }
 
