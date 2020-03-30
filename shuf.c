@@ -178,14 +178,18 @@ int main(int argc, char **argv) {
   }
   // HANDLE THE CASE OF I FLAG
   else if (iflag) {
-    int low = 0;         // Low end of range
-    int high = 0;        // High end of range
+    char * nums = malloc((strlen(loHi) * sizeof(char)) + 1);
+    strlcpy(nums, loHi, sizeof(loHi));
+    nums = strtok(nums, "-");
+    int low = (int)strtol(nums, NULL, 10);         // Low end of range
+    nums = strtok(NULL, "-");
+    int high = (int)strtol(nums, NULL, 10);        // High end of range
     int length = 0;      // The length of the random permutation array
     int *values = NULL;  // Random permutation array
 
     // Collect low and high as integers
-    low = (int)strtol(argv[2], NULL, 10);
-    high = (int)strtol(argv[3], NULL, 10);
+    //low = (int)strtol(argv[2], NULL, 10);
+    //high = (int)strtol(argv[3], NULL, 10);
 
     // Get the permuted array
     values = getIPathArray(low, high, &length);
