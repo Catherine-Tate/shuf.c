@@ -44,8 +44,9 @@ int readInput(int argc, char **argv, char ***lines) {
   size_t line_buf_size = 0;
   int line_count = 0;
   ssize_t line_size;
+  int lines_allocated = 1;
 
-  lines = calloc(1, sizeof(char *));
+  *lines = calloc(1, lines_allocated * sizeof(char *));
 
   if (argc == 0 || (argv[0][0] == '-' && argv[0][1] == '\0')) {
     fp = stdin;
@@ -54,8 +55,15 @@ int readInput(int argc, char **argv, char ***lines) {
     fp = fopen(argv[0], "r");
   }
   while ((line_size = getline(&line_buf, &line_buf_size, fp)) != -1) {
-    lines = realloc(lines, line_count * sizeof(char *));
-    *lines[line_count] = line_buf;
+    // dynamically resize buffer to avoid overflows
+    if (line_count >= lines_allocated) {
+      lines_allocated *= 2;
+      *lines = realloc(*lines, (size_t)lines_allocated * sizeof(char *));
+    }
+    if (*lines == NULL) {
+      perror("Error allocating lines!\n");
+    }
+    (*lines)[line_count] = line_buf;
     line_count++;
     line_buf = NULL;
     line_buf_size = 0;
